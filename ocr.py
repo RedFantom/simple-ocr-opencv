@@ -35,7 +35,7 @@ class OCR(object):
         :param image_file: must be a files.ImageFile object that is grounded
         :return: None
         """
-        if not image_file.isGrounded():
+        if not image_file.is_grounded():
             raise Exception("The provided file is not grounded")
         features = self.feature_extractor.extract(image_file.image, image_file.ground.segments)
         self.classifier.train(features, image_file.ground.classes)
