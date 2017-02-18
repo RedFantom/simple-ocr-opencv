@@ -38,7 +38,7 @@ class TextGrounder(Grounder):
         text = unicode(text)
         text = filter(lambda c: c in string.ascii_letters + string.digits, list(text))
         if len(segments) != len(text):
-            raise Exception("segments/text length mismatch")
+            raise ValueError("segments/text length mismatch")
         classes = classes_to_numpy(text)
         imagefile.set_ground(segments, classes)
 
@@ -102,33 +102,3 @@ class UserGrounder(Grounder):
         print "classified ", numpy.count_nonzero(classes != classes_to_numpy(BLANK_CLASS)), "characters out of", max(
             classes.shape)
         imagefile.set_ground(segments, classes)
-
-
-class TestingGrounder(Grounder):
-    def ground(self, imagefile, segments, characters, _=None):
-        i = 0
-        if imagefile.is_grounded():
-            classes = classes_from_numpy(imagefile.ground.classes)
-            segments = imagefile.ground.segments
-        else:
-            classes = [BLANK_CLASS] * len(
-                segments)  # char(10) is newline. it represents a non-assigned label, and will b filtered
-        allowed_chars = map(ord, string.digits + string.letters + string.punctuation)
-        if len(characters) != len(segments):
-            raise ValueError("Either too many or too little characters provided to the grounder")
-        for key in characters:
-            if key in allowed_chars:
-                classes[i] = unichr(key)
-                i += 1
-
-        classes = numpy.array(classes)
-        is_segment = classes != NOT_A_SEGMENT
-        classes = classes[is_segment]
-        segments = segments[is_segment]
-        classes = list(classes)
-
-        classes = classes_to_numpy(classes)
-        print "classified ", numpy.count_nonzero(classes != classes_to_numpy(BLANK_CLASS)), "characters out of", max(
-            classes.shape)
-        imagefile.set_ground(segments, classes)
-
