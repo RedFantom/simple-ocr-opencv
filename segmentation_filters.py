@@ -11,7 +11,9 @@ def create_default_filter_stack():
 
 
 class Filter(DisplayingProcessor):
-    """A filter processes given segments, returning only the desirable ones"""
+    """
+    A filter processes given segments, returning only the desirable ones
+    """
 
     PARAMETERS = DisplayingProcessor.PARAMETERS
 

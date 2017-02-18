@@ -40,7 +40,12 @@ def classes_from_numpy(classes):
 
 class Classifier(object):
     def train(self, features, classes):
-        '''trains the classifier with the classified feature vectors'''
+        """
+        trains the classifier with the classified feature vectors
+        :param features:
+        :param classes:
+        :return:
+        """
         raise NotImplementedError()
 
     @staticmethod
@@ -49,7 +54,11 @@ class Classifier(object):
         return features[classified], classes[classified]
 
     def classify(self, features):
-        '''returns the classes of the feature vectors'''
+        """
+        returns the classes of the feature vectors
+        :param features:
+        :return:
+        """
         raise NotImplementedError
 
 
