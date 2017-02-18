@@ -1,17 +1,26 @@
-### Simple Python OCR
+# Simple Python OCR
 This repository is a fork of [simple-ocr-opencv](https://github.com/goncalopp/simple-ocr-opencv) by Goncalopp, with the
 goal of turning this engine-project with examples into a working library for everyone
-to use. Currently, this project is not released under a LICENSE. Copying is only allowed
-when you have explicit permission of the authors, at this point full copyright applies.
+to use. This project is available under the [GNU AGPLv3 License](https://www.gnu.org/licenses/agpl-3.0.txt), a copy 
+should be available in LICENSE. If not, check out the link to learn more.
 
-    Copyright (C) 20116-2017 by Goncalopp and RedFantom
+    Copyright (C) 2016-2017 by Goncalopp and RedFantom
     All authors are the copyright owners of their respective additions
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU AGPLv3 License, as found in LICENSE.
 
-Originally inspired by
-http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-opencv-python
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-Essential Concepts
-==================
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.    
+
+Originally inspired by [this question](http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-opencv-python) on StackOverflow.
+
+### Essential Concepts
 
 #### Segmentation
 
@@ -46,8 +55,7 @@ See [ground truth][].
 [k-NN algorithm]: https://en.wikipedia.org/wiki/K-nearest_neighbors_classification
 [ground truth]: https://en.wikipedia.org/wiki/Ground_truth
 
-How to understand this project
-==============================
+#### How to understand this project
 
 Unfortunately, documentation is a bit sparse at the moment (I 
 gladly accept contributions).
@@ -58,8 +66,7 @@ If you need any help, don't hesitate to contact me. You can find my
 email on my github profile.
 
 
-How to use
-==========
+#### How to use
 
 Please check `example.py` for basic usage with the existing pre-grounded images.
 
