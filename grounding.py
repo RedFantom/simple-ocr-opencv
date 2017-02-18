@@ -129,3 +129,4 @@ class TestingGrounder(Grounder):
         print "classified ", numpy.count_nonzero(classes != classes_to_numpy(BLANK_CLASS)), "characters out of", max(
             classes.shape)
         imagefile.set_ground(segments, classes)
+
