@@ -38,8 +38,11 @@ class LineFinder(DisplayingProcessor):
         compactness_list, means_list, diffs, deviations = [], [], [], []
         start_n = 1
         for k in range(start_n, max_lines):
-            compactness, classified_points, means = cv2.kmeans(data=ys, K=k, bestLabels=None, criteria=(
-            cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=2, flags=cv2.KMEANS_PP_CENTERS)
+            try:
+                compactness, classified_points, means = cv2.kmeans(data=ys, K=k, bestLabels=None, criteria=(
+                    cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=2, flags=cv2.KMEANS_PP_CENTERS)
+            except cv2.error:
+                raise ValueError("The file specified could not be split into segments.")
             means = numpy.sort(means, axis=0)
             means_list.append(means)
             compactness_list.append(compactness)
