@@ -1,3 +1,9 @@
+# Written by Goncalopp and RedFantom
+# Thranta Squadron GSF CombatLog Parser, Copyright (C) 2016 by Goncalopp and RedFantom
+# All additions are under the copyright of their respective authors
+# For license see LICENSE
+
+
 def _same_type(a, b):
     type_correct = False
     if type(a) == type(b):
