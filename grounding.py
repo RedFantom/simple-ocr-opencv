@@ -39,10 +39,11 @@ class TextGrounder(Grounder):
         :param text:
         :return:
         """
-        text = unicode(text)
-        text = filter(lambda c: c in string.ascii_letters + string.digits, list(text))
+        if not isinstance(text, list):
+            text = unicode(text)
+            text = filter(lambda c: c in string.ascii_letters + string.digits, list(text))
         if len(segments) != len(text):
-            raise ValueError("segments/text length mismatch")
+            raise ValueError("segments (%s)/text (%s) length mismatch" % (len(segments), len(text)))
         classes = classes_to_numpy(text)
         imagefile.set_ground(segments, classes)
 
