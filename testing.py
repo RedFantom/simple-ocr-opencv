@@ -91,6 +91,16 @@ class Testing(unittest.TestCase):
         segments = segmenter.process(image.image)
         with mock.patch('__builtin__.raw_input', mock_input):
             terminal.ground(image, segments)
+        extractor = SimpleFeatureExtractor()
+        classifier = KNNClassifier()
+        ocr = OCR(segmenter, extractor, classifier)
+        ocr.train(ImageFile('digits1'))
+        digits = ImageFile('digits2')
+        classes, segments = ocr.ocr(digits, show_steps=False)
+        self.assertEqual(reconstruct_chars(classes), "31415926535897932384626433832795028841971693993751058209749445923"
+                                                     "07816406286208998628034825342117067982148086513282306647093844609"
+                                                     "55058223172535940812848111745028410270193852110555964462294895493"
+                                                     "038196442881097566593344612847")
 
 current_char = 0
 characters = ['9', '8', '2', '1', '4', '8', '0', '8', '6', '5', '1', '3', '2', '8',
