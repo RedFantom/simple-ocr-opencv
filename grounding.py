@@ -1,8 +1,13 @@
-'''various classis for establishing ground truth'''
+# Written by Goncalopp and RedFantom
+# Thranta Squadron GSF CombatLog Parser, Copyright (C) 2016 by Goncalopp and RedFantom
+# All additions are under the copyright of their respective authors
+# For license see LICENSE
+"""
+various classis for establishing ground truth
+"""
 
-from files import ImageFile
 from classification import classes_to_numpy, classes_from_numpy, BLANK_CLASS
-from opencv_utils import background_color, show_image_and_wait_for_key, draw_segments, draw_classes
+from opencv_utils import show_image_and_wait_for_key, draw_segments, draw_classes
 import numpy
 import string
 
@@ -11,31 +16,84 @@ NOT_A_SEGMENT = unichr(10)
 
 class Grounder(object):
     def ground(self, imagefile, segments, external_data):
-        '''given an ImageFile, grounds it, through arbirary data (better defined in subclasses)'''
+        """
+        given an ImageFile, grounds it, through arbitrary data (better defined in subclasses)
+        :param imagefile:
+        :param segments:
+        :param external_data:
+        :return:
+        """
         raise NotImplementedError()
 
 
+class TerminalGrounder(Grounder):
+    """
+    Labels by using raw_input() to capture a character each line
+    """
+
+    def ground(self, imagefile, segments, _=None):
+        classes = []
+        character = ""
+        print "Found %s segments to ground." % len(segments)
+        print "Type 'exit' to stop grounding the file."
+        print "Type ' ' for anything that is not a character."
+        print "Grounding will exit automatically after all segments."
+        print "Going back to a previous segment is not possible at this time."
+        for num in range(len(segments)):
+            while len(character) != 1:
+                character = raw_input("Please enter the value for segment #%s:  " % (num+1))
+                if character == "exit":
+                    break
+                if len(character) != 1:
+                    print "That is not a single character. Please try again."
+            if character == " ":
+                classes.append(NOT_A_SEGMENT)
+            else:
+                classes.append(character)
+            character = ""
+        classes = classes_to_numpy(classes)
+        imagefile.set_ground(segments, classes)
+
+
 class TextGrounder(Grounder):
-    '''labels from a string'''
+    """
+    labels from a string
+    """
 
     def ground(self, imagefile, segments, text):
-        '''tries to grounds from a simple string'''
-        text = unicode(text)
-        text = filter(lambda c: c in string.ascii_letters + string.digits, list(text))
+        """
+        tries to grounds from a simple string
+        :param imagefile:
+        :param segments:
+        :param text:
+        :return:
+        """
+        if not isinstance(text, list):
+            text = unicode(text)
+            text = filter(lambda c: c in string.ascii_letters + string.digits, list(text))
         if len(segments) != len(text):
-            raise ValueError("Segments (%s)/Text (%s) length mismatch" % (len(segments), len(text)))
+            raise ValueError("segments (%s)/text (%s) length mismatch" % (len(segments), len(text)))
         classes = classes_to_numpy(text)
         imagefile.set_ground(segments, classes)
 
 
 class UserGrounder(Grounder):
-    '''labels by interactively asking the user'''
+    """
+    labels by interactively asking the user
+    """
 
     def ground(self, imagefile, segments, _=None):
-        '''asks the user to label each segment as either a character or "<" for unknown'''
-        print '''For each shown segment, please write the character that it represents, or spacebar if it's not a character. To undo a classification, press backspace. Press ESC when completed, arrow keys to move'''
+        """
+        asks the user to label each segment as either a character or "<" for unknown
+        :param imagefile:
+        :param segments:
+        :param _:
+        :return:
+        """
+        print "For each shown segment, please write the character that it represents, or spacebar if it's not a " \
+              "character. To undo a classification, press backspace. Press ESC when completed, arrow keys to move"
         i = 0
-        if imagefile.isGrounded():
+        if imagefile.is_grounded():
             classes = classes_from_numpy(imagefile.ground.classes)
             segments = imagefile.ground.segments
         else:
