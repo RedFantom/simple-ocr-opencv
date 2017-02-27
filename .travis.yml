@@ -10,6 +10,7 @@ python:
 before_install:
   - pip install pillow
   - pip install mock
+  - pip install codecov coverage
   - travis_retry git clone --depth 1 https://github.com/Itseez/opencv.git $DEPS_DIR/opencv
   - mkdir $OPENCV_BUILD_DIR && cd $OPENCV_BUILD_DIR
 
@@ -21,7 +22,6 @@ before_install:
       fi
   - make -j4
   - sudo make install
-
   - echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/opencv.conf
   - sudo ldconfig
   - echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig" | sudo tee -a /etc/bash.bashrc
@@ -29,3 +29,6 @@ before_install:
   - export PYTHONPATH=$OPENCV_BUILD_DIR/lib/python3.3/site-packages:$PYTHONPATH
   - cd /home/travis/build/RedFantom/simple-ocr-opencv
 script: python testing.py
+after_install:
+  - coverage run testing.py
+  - codecov
