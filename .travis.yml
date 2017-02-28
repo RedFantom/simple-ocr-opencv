@@ -8,6 +8,8 @@ required: sudo
 python:
     "2.7"
 before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
   - pip install pillow
   - pip install mock
   - pip install codecov coverage
