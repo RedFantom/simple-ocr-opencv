@@ -5,18 +5,20 @@
 import unittest
 import mock
 from files import ImageFile
-from grounding import TextGrounder, TerminalGrounder
+from grounding import TextGrounder, TerminalGrounder, Grounder, UserGrounder
 from segmentation import ContourSegmenter, RawContourSegmenter
 from feature_extraction import SimpleFeatureExtractor
 from classification import KNNClassifier
 from ocr import OCR, reconstruct_chars, SimpleOCR
+import opencv_utils
 import improver
 from PIL import Image
 import os
+from StringIO import StringIO
 
 
-class Testing(unittest.TestCase):
-    def test_grounding_digits(self):
+class TestGrounders(unittest.TestCase):
+    def test_textgrounder_list(self):
         grounder = TextGrounder()
         self.assertIsInstance(grounder, TextGrounder)
         digits = ImageFile('digits1')
@@ -37,7 +39,39 @@ class Testing(unittest.TestCase):
         grounder.ground(digits, segments, characters)
         self.assertTrue(digits.is_grounded())
 
-    def test_grounding_raise(self):
+    def test_textgrounder_str(self):
+        grounder = TextGrounder()
+        self.assertIsInstance(grounder, TextGrounder)
+        digits = ImageFile('digits1')
+        self.assertIsInstance(digits, ImageFile)
+        segmenter = ContourSegmenter()
+        self.assertIsInstance(segmenter, ContourSegmenter)
+        segments = segmenter.process(digits.image)
+        self.assertEqual(len(segments), 125)
+        characters = '982148086513282306647093844609550582231725359408128481117450284' \
+                     '10270193852110555964462294895493038196442881097566593344612847'
+        grounder.ground(digits, segments, characters)
+        self.assertTrue(digits.is_grounded())
+
+    def test_textgrounder_str_asciichecks(self):
+        grounder = TextGrounder()
+        self.assertIsInstance(grounder, TextGrounder)
+        digits = ImageFile('digits1')
+        self.assertIsInstance(digits, ImageFile)
+        segmenter = ContourSegmenter()
+        self.assertIsInstance(segmenter, ContourSegmenter)
+        segments = segmenter.process(digits.image)
+        self.assertEqual(len(segments), 125)
+        characters = '98214808=65132823066470938446095505822*31725359408128481117450284' \
+                     '102701938521105559644622948-95493038196442881097566593344612+847'
+        grounder.ground(digits, segments, characters)
+        self.assertTrue(digits.is_grounded())
+
+    def test_grounder(self):
+        grounder = Grounder()
+        self.assertRaises(NotImplementedError, lambda: grounder.ground(object, object, object))
+
+    def test_textgrounder_wrong_amount_of_digits(self):
         grounder = TextGrounder()
         digits = ImageFile('digits1')
         segmenter = ContourSegmenter()
@@ -54,8 +88,13 @@ class Testing(unittest.TestCase):
         self.assertRaises(ValueError, lambda: grounder.ground(digits, segments, characters[:-4]))
         self.assertRaises(ValueError, lambda: grounder.ground(digits, segments, characters))
 
-    def test_ocr_digits(self):
+    def test_terminal_grounder(self):
+        terminal = TerminalGrounder()
         segmenter = ContourSegmenter()
+        image = ImageFile('digits1')
+        segments = segmenter.process(image.image)
+        with mock.patch('__builtin__.raw_input', mock_input):
+            terminal.ground(image, segments)
         extractor = SimpleFeatureExtractor()
         classifier = KNNClassifier()
         ocr = OCR(segmenter, extractor, classifier)
@@ -67,30 +106,18 @@ class Testing(unittest.TestCase):
                                                      "55058223172535940812848111745028410270193852110555964462294895493"
                                                      "038196442881097566593344612847")
 
-    def test_pillow_imagefile_conversion(self):
-        imagefile = ImageFile('digits1')
-        self.assertIsInstance(imagefile, ImageFile)
-        pillow = improver.imagefile_to_pillow(imagefile)
-        self.assertIsInstance(pillow, Image.Image)
-
-    def test_improver_class_segmentation(self):
-        for name in [name for name in os.listdir(os.getcwd() + "/data") if name.startswith("timer")]:
-            digits = ImageFile(name)
-            impr = improver.ImageFileImprover(digits)
-            impr.crop((0, 20, 70, 40))
-            impr.enhance(color=0.0, brightness=1.0, contrast=1.0, sharpness=1.0, invert=True)
-            digits_impr = impr.imagefile
-            segmenter = RawContourSegmenter(blur_x=5, blur_y=5)
-            segments = segmenter.process(digits_impr.image)
-            self.assertTrue(len(segments) >= 4)
-
-    def test_terminal_grounder(self):
+    def test_terminal_grounder_exit(self):
         terminal = TerminalGrounder()
         segmenter = ContourSegmenter()
         image = ImageFile('digits1')
         segments = segmenter.process(image.image)
-        with mock.patch('__builtin__.raw_input', mock_input):
-            terminal.ground(image, segments)
+        with mock.patch('__builtin__.raw_input', return_value="exit"):
+            self.assertRaises(AssertionError, lambda: terminal.ground(image, segments))
+
+
+class TestOCR(unittest.TestCase):
+    def test_ocr_digits(self):
+        segmenter = ContourSegmenter()
         extractor = SimpleFeatureExtractor()
         classifier = KNNClassifier()
         ocr = OCR(segmenter, extractor, classifier)
@@ -122,6 +149,31 @@ class Testing(unittest.TestCase):
                                                      "038196442881097566593344612847")
 
 
+class TestImprovements(unittest.TestCase):
+    def test_pillow_imagefile_conversion(self):
+        imagefile = ImageFile('digits1')
+        self.assertIsInstance(imagefile, ImageFile)
+        pillow = improver.imagefile_to_pillow(imagefile)
+        self.assertIsInstance(pillow, Image.Image)
+
+    def test_improver_class_segmentation(self):
+        for name in [name for name in os.listdir(os.getcwd() + "/data") if name.startswith("timer")]:
+            digits = ImageFile(name)
+            impr = improver.ImageFileImprover(digits)
+            impr.crop((0, 20, 70, 40))
+            impr.enhance(color=0.0, brightness=1.0, contrast=1.0, sharpness=1.0, invert=True)
+            digits_impr = impr.imagefile
+            segmenter = RawContourSegmenter(blur_x=5, blur_y=5)
+            segments = segmenter.process(digits_impr.image)
+            self.assertTrue(len(segments) >= 4)
+
+    def test_opencv_brightness(self):
+        pass
+
+    def test_opencv_imageprocesser(self):
+        processor = opencv_utils.ImageProcessor()
+        self.assertRaises(NotImplementedError, lambda: processor._image_processing(object))
+
 
 current_char = 0
 characters = ['9', '8', '2', '1', '4', '8', '0', '8', '6', '5', '1', '3', '2', '8',
@@ -134,6 +186,8 @@ characters = ['9', '8', '2', '1', '4', '8', '0', '8', '6', '5', '1', '3', '2', '
               '1', '9', '6', '4', '4', '2', '8', '8', '1', '0', '9', '7', '5', '6',
               '6', '5', '9', '3', '3', '4', '4', '6', '1', '2', '8', '4', '7']
 mock_input_gen = (char for char in characters)
+multiple_input_list = ['agc', 'exit']
+multiple_input_gen = (char for char in multiple_input_list)
 
 
 def mock_input(prompt):
