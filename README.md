@@ -1,6 +1,6 @@
 # Simple Python OCR  
 [![Build Status](https://travis-ci.org/RedFantom/simple-ocr-opencv.svg?branch=master)](https://travis-ci.org/RedFantom/simple-ocr-opencv)
-[![Build status](https://ci.appveyor.com/api/projects/status/cu0fn9l5asbg4k02?svg=true)](https://ci.appveyor.com/project/RedFantom/simple-ocr-opencv)
+[![Build status](https://ci.appveyor.com/api/projects/status/cu0fn9l5asbg4k02/branch/master?svg=true)](https://ci.appveyor.com/project/RedFantom/simple-ocr-opencv/branch/master)
 [![codecov](https://codecov.io/gh/RedFantom/simple-ocr-opencv/branch/master/graph/badge.svg)](https://codecov.io/gh/RedFantom/simple-ocr-opencv)
 
 This repository is a fork of [simple-ocr-opencv](https://github.com/goncalopp/simple-ocr-opencv) by Goncalopp, with the
