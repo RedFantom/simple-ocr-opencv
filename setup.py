@@ -1,4 +1,5 @@
 from setuptools import setup
+import os
 
 setup(
     name="simpleocr",
@@ -14,5 +15,5 @@ setup(
                  "Programming Language :: Python :: 3",
                  "License :: OSI Approved :: GNU Affero General Public License v2 or later (AGPLv2+)"],
     include_package_data=True,
-    install_requires=["opencv-python"]
+    install_requires=[] if "TRAVIS" in os.environ else ["opencv-python"]
 )
