@@ -8,7 +8,7 @@ env:
 virtualenv:
     system_site_packages: true
 install:
-  - if [$OPENCV_VERSION = 2]; then
+  - if [$OPENCV_VERSION == 2]; then
       python -m pip install pip --upgrade;
       python -m pip install wheel;
       python -m pip install opencv-python;
