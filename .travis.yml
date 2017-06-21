@@ -2,10 +2,19 @@ language: python
 required: sudo
 python:
     "2.7"
+env:
+  - OPENCV_VERSION = 3
+  - OPENCV_VERSION = 2
 virtualenv:
     system_site_packages: true
 install:
-  - sudo apt-get install python-opencv
+  - if [$OPENCV_VERSION = 2]; then
+      python -m pip install pip --upgrade;
+      python -m pip install wheel;
+      python -m pip install opencv-python;
+    else
+      sudo apt-get install python-opencv;
+    fi;
   - python -m pip install nose pillow six
 script:
   - python -m pip install .
