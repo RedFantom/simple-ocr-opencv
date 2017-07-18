@@ -55,6 +55,12 @@ class Ground(object):
         self.segments = segments
         self.classes = classes
 
+    def write(self):
+        pass
+
+    def read(self):
+        pass
+
 
 class GroundFile(Ground):
     """
